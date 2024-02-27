@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "228817525871",
+    "project_id": "bankingphisingdetection",
+    "storage_bucket": "bankingphisingdetection.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228817525871:android:0db15df822cdbc112f819a",
+        "android_client_info": {
+          "package_name": "com.example.banking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-SQTSs6JJ9i8jiGLve4cSFs4zvwGESkI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
