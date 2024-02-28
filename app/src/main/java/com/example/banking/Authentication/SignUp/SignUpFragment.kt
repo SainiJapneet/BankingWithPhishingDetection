@@ -56,7 +56,9 @@ class SignUpFragment : Fragment() {
                                 db.child(uname).child("UserName").setValue(uname)
                                 db.child(uname).child("PIN").setValue(pin)
                                 Toast.makeText(requireContext(),"User created",Toast.LENGTH_SHORT).show()
-
+                                val frag = requireActivity().supportFragmentManager.beginTransaction()
+                                frag.replace(R.id.authFrame, MobileSignUpFragment())
+                                frag.commit()
                             }else{
                                 Toast.makeText(requireContext(),"Signup Failed",Toast.LENGTH_SHORT).show()
                             }
