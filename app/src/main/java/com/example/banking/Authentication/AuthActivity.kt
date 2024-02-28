@@ -3,7 +3,7 @@ package com.example.banking.Authentication
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import com.example.banking.Authentication.LogIn.LoginFragment
+import com.example.banking.Authentication.SignIn.SignInFragment
 import com.example.banking.R
 
 class AuthActivity : AppCompatActivity() {
@@ -14,7 +14,7 @@ class AuthActivity : AppCompatActivity() {
 
 
         getSupportActionBar()?.hide()
-        loadFragment(LoginFragment())
+        loadFragment(SignInFragment())
 
     }
     fun loadFragment(frag: Fragment){
