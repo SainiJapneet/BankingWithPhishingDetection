@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.banking.R
 import com.example.banking.databinding.FragmentSignupBinding
@@ -39,6 +40,7 @@ class SignUpFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         firebaseDatabase = Firebase.database
         db = firebaseDatabase.getReference("Clients")
+        val bundle = Bundle()
 
 
         binding.btnSignUp.setOnClickListener {
@@ -50,14 +52,20 @@ class SignUpFragment : Fragment() {
                         email = binding.edtSignupEmail.text.trim().toString()
                         pass = binding.edtSignupPassword1.text.trim().toString()
                         pin = binding.edtSignupPIN1.text.trim().toString()
+                        bundle.putString("uname",uname)
+
                         auth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
                             if (it.isSuccessful){
 
                                 db.child(uname).child("UserName").setValue(uname)
                                 db.child(uname).child("PIN").setValue(pin)
                                 Toast.makeText(requireContext(),"User created",Toast.LENGTH_SHORT).show()
+
+                                val myFrag = MobileSignUpFragment()
+                                myFrag.arguments = bundle
+
                                 val frag = requireActivity().supportFragmentManager.beginTransaction()
-                                frag.replace(R.id.authFrame, MobileSignUpFragment())
+                                frag.replace(R.id.authFrame, myFrag)
                                 frag.commit()
                             }else{
                                 Toast.makeText(requireContext(),"Signup Failed",Toast.LENGTH_SHORT).show()
@@ -67,7 +75,7 @@ class SignUpFragment : Fragment() {
                             override fun onDataChange(snapshot: DataSnapshot) {
                                 if(snapshot.hasChild(uname)){
                                     binding.edtSignupUname.error = "$uname already taken"
-                                    Toast.makeText(requireContext(),"Username already exists",Toast.LENGTH_SHORT).show()
+                                    //Toast.makeText(requireContext(),"Username already exists",Toast.LENGTH_SHORT).show()
                                 }
                             }
 
