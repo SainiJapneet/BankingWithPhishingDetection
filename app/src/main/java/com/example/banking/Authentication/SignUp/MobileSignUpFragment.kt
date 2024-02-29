@@ -55,11 +55,9 @@ class MobileSignUpFragment : Fragment() {
         }
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
             override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                TODO("Not yet implemented")
             }
 
             override fun onVerificationFailed(p0: FirebaseException) {
-                TODO("Not yet implemented")
             }
 
             override fun onCodeSent(p0: String, p1: PhoneAuthProvider.ForceResendingToken) {
@@ -93,17 +91,21 @@ class MobileSignUpFragment : Fragment() {
 
     fun verifyOTP(){
         if(binding.edtOTP.text.trim().toString().isNotEmpty()){
+            binding.progressSignup2.visibility = View.VISIBLE
             otp = binding.edtOTP.text.trim().toString()
             val credential: PhoneAuthCredential = PhoneAuthProvider.getCredential(storedVerificationId,otp)
             auth.signInWithCredential(credential).addOnCompleteListener{task ->
                 if(task.isSuccessful){
                     db.child("Phone Number").setValue(phn)
+                    db.child("User Type").setValue("client")
+                    db.child("HaveAccount").setValue("NO")
                     val frag = requireActivity().supportFragmentManager.beginTransaction()
                     frag.replace(R.id.authFrame, SignInFragment())
                     frag.commit()
                 }else{
                     if(task.exception is FirebaseAuthInvalidCredentialsException){
                         binding.edtOTP.error = "Invalid OTP"
+                        binding.progressSignup2.visibility = View.GONE
                     }
                 }
             }

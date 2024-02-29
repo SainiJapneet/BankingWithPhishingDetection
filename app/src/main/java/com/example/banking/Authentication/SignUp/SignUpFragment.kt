@@ -27,6 +27,7 @@ class SignUpFragment : Fragment() {
     var email = ""
     var pass = ""
     var pin = ""
+    val bundle = Bundle()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -40,60 +41,11 @@ class SignUpFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         firebaseDatabase = Firebase.database
         db = firebaseDatabase.getReference("Clients")
-        val bundle = Bundle()
 
 
         binding.btnSignUp.setOnClickListener {
             Toast.makeText(requireContext(),"BtnSignUp clicked",Toast.LENGTH_SHORT).show()
-            if (!isEmpty()){
-                if(passMatch()){
-                    if(pinMatch()){
-                        uname = binding.edtSignupUname.text.trim().toString()
-                        email = binding.edtSignupEmail.text.trim().toString()
-                        pass = binding.edtSignupPassword1.text.trim().toString()
-                        pin = binding.edtSignupPIN1.text.trim().toString()
-                        bundle.putString("uname",uname)
-
-                        auth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
-                            if (it.isSuccessful){
-
-                                db.child(uname).child("UserName").setValue(uname)
-                                db.child(uname).child("PIN").setValue(pin)
-                                Toast.makeText(requireContext(),"User created",Toast.LENGTH_SHORT).show()
-
-                                val myFrag = MobileSignUpFragment()
-                                myFrag.arguments = bundle
-
-                                val frag = requireActivity().supportFragmentManager.beginTransaction()
-                                frag.replace(R.id.authFrame, myFrag)
-                                frag.commit()
-                            }else{
-                                Toast.makeText(requireContext(),"Signup Failed",Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        db.addListenerForSingleValueEvent(object: ValueEventListener{
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if(snapshot.hasChild(uname)){
-                                    binding.edtSignupUname.error = "$uname already taken"
-                                    //Toast.makeText(requireContext(),"Username already exists",Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {}
-
-                        })
-
-
-                    }else{
-                        Toast.makeText(requireContext(),"PINs don't match",Toast.LENGTH_SHORT).show()
-                    }
-                }else{
-                    Toast.makeText(requireContext(),"Passwords don't match",Toast.LENGTH_SHORT).show()
-                }
-
-            }else{
-                Toast.makeText(requireContext(),"Fill all fields",Toast.LENGTH_SHORT).show()
-            }
+            createUser()
         }
 
         return binding.root
@@ -143,6 +95,56 @@ class SignUpFragment : Fragment() {
             binding.edtSignupPIN1.error = "PINs don't match"
             binding.edtSignupPIN2.error = "PINs don't match"
             return false
+        }
+    }
+    fun createUser(){
+        if (!isEmpty()){
+            if(passMatch()){
+                if(pinMatch()){
+                    binding.progressSignup1.visibility = View.VISIBLE
+                    uname = binding.edtSignupUname.text.trim().toString()
+                    email = binding.edtSignupEmail.text.trim().toString()
+                    pass = binding.edtSignupPassword1.text.trim().toString()
+                    pin = binding.edtSignupPIN1.text.trim().toString()
+                    bundle.putString("uname",uname)
+                    auth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener {
+                        if (it.isSuccessful){
+                            db.child(uname).child("UserName").setValue(uname)
+                            db.child(uname).child("PIN").setValue(pin)
+                            Toast.makeText(requireContext(),"User created",Toast.LENGTH_SHORT).show()
+
+                            val myFrag = MobileSignUpFragment()
+                            myFrag.arguments = bundle
+
+                            val frag = requireActivity().supportFragmentManager.beginTransaction()
+                            frag.replace(R.id.authFrame, myFrag)
+                            frag.commit()
+                        }else{
+                            Toast.makeText(requireContext(),"Signup Failed",Toast.LENGTH_SHORT).show()
+                            binding.progressSignup1.visibility = View.GONE
+                        }
+                    }
+                    db.addListenerForSingleValueEvent(object: ValueEventListener{
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if(snapshot.hasChild(uname)){
+                                binding.edtSignupUname.error = "$uname already taken"
+                                binding.progressSignup1.visibility = View.GONE
+                                //Toast.makeText(requireContext(),"Username already exists",Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {}
+
+                    })
+                }else{
+                    Toast.makeText(requireContext(),"PINs don't match",Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                Toast.makeText(requireContext(),"Passwords don't match",Toast.LENGTH_SHORT).show()
+            }
+
+        }else{
+            Toast.makeText(requireContext(),"Fill all fields",Toast.LENGTH_SHORT).show()
         }
     }
 }
