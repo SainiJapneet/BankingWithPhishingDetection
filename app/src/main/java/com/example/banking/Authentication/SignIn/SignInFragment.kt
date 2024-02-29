@@ -24,20 +24,19 @@ class SignInFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val binding = FragmentSigninBinding.inflate(inflater,container,false)
-        var email = binding.edtSignInEmail.text.trim().toString()
-        var pass = binding.edtSignInPassword.text.trim().toString()
+        binding = FragmentSigninBinding.inflate(inflater,container,false)
+        auth = FirebaseAuth.getInstance()
         binding.txtSignUp.setOnClickListener {
             signUp()
         }
         binding.btnSignIn.setOnClickListener {
-            binding.progressSignin.visibility = View.VISIBLE
             signIn()
         }
         return binding.root
     }
     fun signIn(){
         if(!isEmpty()){
+            binding.progressSignin.visibility = View.VISIBLE
             var email = binding.edtSignInEmail.text.trim().toString()
             var pass = binding.edtSignInPassword.text.trim().toString()
             auth?.signInWithEmailAndPassword(email,pass)?.addOnCompleteListener {
@@ -57,11 +56,11 @@ class SignInFragment : Fragment() {
     }
     fun isEmpty(): Boolean{
         var key = false
-        if(binding.edtSignInEmail.text.trim().toString().isNotEmpty()){
+        if(binding.edtSignInEmail.text.trim().toString().isEmpty()){
             binding.edtSignInEmail.error = "Email is required"
             key = true
         }
-        if(binding.edtSignInPassword.text.trim().toString().isNotEmpty()){
+        if(binding.edtSignInPassword.text.trim().toString().isEmpty()){
             binding.edtSignInPassword.error = "Password is required"
             key = true
         }
